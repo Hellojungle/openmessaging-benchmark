@@ -64,6 +64,7 @@ public class DistributedWorkersEnsemble implements Worker {
 
     private final AsyncHttpClient httpClient = asyncHttpClient();
 
+
     private int numberOfUsedProducerWorkers;
 
     public DistributedWorkersEnsemble(List<String> workers) {
@@ -277,6 +278,7 @@ public class DistributedWorkersEnsemble implements Worker {
         FutureUtil.waitForAll(futures).thenRun(() -> {
             resultFuture.complete(futures.stream().map(CompletableFuture::join).collect(toList()));
         }).exceptionally(ex -> {
+            log.error("get exception {}", ex);
             resultFuture.completeExceptionally(ex);
             return null;
         });

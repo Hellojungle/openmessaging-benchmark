@@ -223,13 +223,15 @@ public class WorkloadGenerator implements AutoCloseable {
 
                 // Slows the publishes to let the consumer time to absorb the backlog
                 worker.adjustPublishRate(minRate / 10);
+                int i = 0;
                 while (true) {
                     stats = worker.getCountersStats();
                     long backlog = workload.subscriptionsPerTopic * stats.messagesSent - stats.messagesReceived;
                     if (backlog < 1000) {
                         break;
                     }
-
+                    i++;
+                    log.debug("reduce {} times", i);
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
@@ -257,7 +259,7 @@ public class WorkloadGenerator implements AutoCloseable {
                 log.debug("No bottleneck found, increasing the rate to {}", currentRate);
             } else if (++successfulPeriods > 3) {
                 minRate = currentRate * 0.95;
-                maxRate = currentRate * 1.05;
+                maxRate = currentRate * 1.50;
                 successfulPeriods = 0;
             }
 

@@ -133,9 +133,10 @@ public class LocalWorker implements Worker, ConsumerCallback {
         DriverConfiguration driverConfiguration = mapper.readValue(driverConfigFile, DriverConfiguration.class);
 
         log.info("Driver: {}", writer.writeValueAsString(driverConfiguration));
-
+        log.info("driverConfigFile: {}", driverConfigFile);
         try {
             benchmarkDriver = (BenchmarkDriver) Class.forName(driverConfiguration.driverClass).newInstance();
+            log.info(benchmarkDriver.toString());
             benchmarkDriver.initialize(driverConfigFile, statsLogger);
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
             throw new RuntimeException(e);
@@ -241,6 +242,10 @@ public class LocalWorker implements Worker, ConsumerCallback {
 
     @Override
     public void adjustPublishRate(double publishRate) {
+        if(publishRate < 1.0) {
+            rateLimiter.setRate(1.0);
+            return;
+        }
         rateLimiter.setRate(publishRate);
     }
 

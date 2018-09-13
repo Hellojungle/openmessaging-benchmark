@@ -18,6 +18,7 @@
  */
 package io.openmessaging.benchmark.worker;
 
+import io.openmessaging.benchmark.worker.commands.CountersStats;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.List;
@@ -167,7 +168,9 @@ public class WorkerHandler {
     }
 
     private void handleCountersStats(Context ctx) throws Exception {
-        ctx.result(writer.writeValueAsString(localWorker.getCountersStats()));
+        CountersStats result = localWorker.getCountersStats();
+        ctx.result(writer.writeValueAsString(result));
+        log.info("send {}, recv {}", result.messagesSent, result.messagesReceived);
     }
 
     private void handleResetStats(Context ctx) throws Exception {
